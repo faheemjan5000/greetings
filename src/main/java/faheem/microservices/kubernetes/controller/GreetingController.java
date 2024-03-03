@@ -17,4 +17,9 @@ public class GreetingController {
     public String helloFaheem(){
         return "hello world!";
     }
+
+    @GetMapping("/check")
+    public String check(){
+        return "hello world! checking...";
+    }
 }
