@@ -20,6 +20,6 @@ public class GreetingController {
 
     @GetMapping("/check")
     public String check(){
-        return "hello world! checking...";
+        return "hello world! checking........yes check";
     }
 }
