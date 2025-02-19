@@ -1,33 +1,72 @@
 pipeline {
     agent any
-    tools{
-        maven 'maven_3_5_0'
+
+    environment {
+        // Define environment variables for Docker Hub credentials
+        DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials') // Jenkins credential ID for Docker Hub
+        DOCKER_IMAGE_NAME = '333991jan/greetingsviajenkinsfile' // Replace with your Docker Hub image name
+        DOCKER_IMAGE_TAG = 'latest' // Docker image tag
+        GIT_REPO_URL = 'https://github.com/faheemjan5000/greetings.git' // Replace with your GitHub repository URL
+        GIT_BRANCH = 'main' // Replace with your Git branch
     }
-    stages{
-        stage('Build Maven'){
-            steps{
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/faheemjan5000/greetings']]])
-                sh 'mvn clean install'
-            }
-        }
-        stage('Build docker image'){
-            steps{
-                script{
-                    sh 'docker build -t 333991jan/devops-integration .'
-                }
-            }
-        }
-        stage('Push image to Hub'){
-            steps{
-                script{
-                   withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
-                   sh 'docker login -u 333991jan -p ${dockerhubpwd}'
 
-}
-                   sh 'docker push 333991jan/devops-integration'
+    stages {
+        // Stage 0: Clone Project from GitHub
+        stage('Clone Project from GitHub') {
+            steps {
+                script {
+                    echo 'Cloning Project from GitHub...'
+                    git branch: "${GIT_BRANCH}", url: "${GIT_REPO_URL}"
                 }
             }
         }
 
+        // Stage 1: Build Maven Project
+        stage('Build Maven Project') {
+            steps {
+                script {
+                    echo 'Building Maven Project...'
+                    sh 'mvn clean package' // Runs Maven build
+                }
+            }
+        }
+
+        // Stage 2: Create Docker Image
+        stage('Create Docker Image') {
+            steps {
+                script {
+                    echo 'Creating Docker Image...'
+                    sh """
+                        docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
+                    """
+                }
+            }
+        }
+
+        // Stage 3: Push Docker Image to Docker Hub
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    echo 'Logging into Docker Hub...'
+                    sh """
+                        echo ${DOCKER_HUB_CREDENTIALS_PSW} | docker login -u ${DOCKER_HUB_CREDENTIALS_USR} --password-stdin
+                    """
+
+                    echo 'Pushing Docker Image to Docker Hub...'
+                    sh """
+                        docker push ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}
+                    """
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
     }
 }
