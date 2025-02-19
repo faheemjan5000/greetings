@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Define environment variables for Docker Hub credentials
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials') // Jenkins credential ID for Docker Hub
-        DOCKER_IMAGE_NAME = '333991jan/greetingsviajenkinsfile' // Replace with your Docker Hub image name
+        DOCKER_IMAGE_NAME = '333991jan/greetingsss' // Replace with your Docker Hub image name
         DOCKER_IMAGE_TAG = 'latest' // Docker image tag
         GIT_REPO_URL = 'https://github.com/faheemjan5000/greetings.git' // Replace with your GitHub repository URL
         GIT_BRANCH = 'main' // Replace with your Git branch
@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
                     echo 'Cloning Project from GitHub...'
-                    git branch: "${GIT_BRANCH}", url: "${GIT_REPO_URL}"
+                    git branch: "${GIT_BRANCH}", url: "${GIT_REPO_URL}" ,credentialsId: 'b0127267-1859-4ce3-8a1c-0fc5b02d6728'
                 }
             }
         }
@@ -37,7 +37,7 @@ pipeline {
                 script {
                     echo 'Creating Docker Image...'
                     sh """
-                        docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} .
+                       docker build -t 333991jan/greetingsss .
                     """
                 }
             }
