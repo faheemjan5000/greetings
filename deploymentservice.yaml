@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greetingss-deployment
+  labels:
+    app: greetingss
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: greetingss
+  template:
+    metadata:
+      labels:
+        app: greetingss
+    spec:
+      containers:
+        - name: greetingss
+          image: 333991jan/greetingss
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: greetingss-service
+spec:
+  selector:
+    app: greetingss
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+      nodePort: 30000  # Modify the NodePort as needed
+  type: NodePort
